@@ -1,7 +1,7 @@
 const { User } = require("../models");
 
 function createUser(request, response, next) {
-  return User.create(request.body.data)
+  return User.create(request.body)
     .then(user => response.status(201).json(user))
     .catch(err => console.error(err));
 }
@@ -20,7 +20,10 @@ function updateUser(request, response, next) {
 }
 
 function deleteUser(request, response, next) {
-  return response.send("deleted user!!!??");
+
+ return User.findOneAndRemove(request.params.id)
+    .then(() => response.send("deleted user!!!??"))
+    .catch(err => console.error(err));
 }
 
 
