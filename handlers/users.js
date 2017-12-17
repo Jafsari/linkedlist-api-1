@@ -2,7 +2,7 @@ const { User } = require("../models");
 const { formatResponse } = require('../helpers')
 
 function createUser(request, response, next) {
-  return User.create(request.body.data)
+  return User.create(request.body)
     .then(user => response.status(201).json(user))
     .catch(err => console.error(err));
 }

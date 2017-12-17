@@ -5,18 +5,17 @@ const { usersHandler } = require("../handlers")
 const router = new express.Router();
 const { getUsers, createUser, getUser, updateUser, deleteUser } = usersHandler;
 
-
 router  
   .route("")
-  .get(usersHandler.getUsers)
-  .post(usersHandler.createUser)
+  .get(getUsers)
+  .post(createUser)
 
 
 router
   .route("/:username")
-  .get(usersHandler.getUser)
-  .patch(usersHandler.updateUser)
-  .delete(usersHandler.deleteUser);
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 
 module.exports = router;
