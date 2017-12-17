@@ -9,15 +9,23 @@ function createUser(request, response, next) {
 
 function getUser(request, response, next) {
   const username = request.params.username;
-  return response.send("got a user!");
+  return User.findOne( {username} )
+    .then(user => response.status(200).json(user))
+    .catch(err => console.error(err));  
 }
 
 function getUsers(request, response, next) {
-  return response.send("got all users!!");
+  return User.find()
+    .then(users => response.status(200).json(users))
+    .catch(err => console.error(err));
 }
 
 function updateUser(request, response, next) {
-  return response.send("updated user!!!");
+  const username = request.params.username;
+  return User.findOneAndUpdate( {username}, request.body, {new: true} )
+    .then(user => response.status(200).json(user))
+    .catch(err => console.error(err));
+
 }
 
 function deleteUser(request, response, next) {
@@ -27,7 +35,7 @@ function deleteUser(request, response, next) {
           status: 200,
           title: 'Success',
           message: `The operation was successful.`
-        })
+        }))
     .catch(err => console.error(err));
   // return response.send("deleted user!!!??");
 }
