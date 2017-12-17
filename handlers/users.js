@@ -1,4 +1,5 @@
 const { User } = require("../models");
+const { formatResponse } = require('../helpers')
 
 function createUser(request, response, next) {
   return User.create(request.body.data)
@@ -20,7 +21,15 @@ function updateUser(request, response, next) {
 }
 
 function deleteUser(request, response, next) {
-  return response.send("deleted user!!!??");
+  const username = request.params.username;
+  return User.findOneAndRemove(username)
+    .then(() => response.json({
+          status: 200,
+          title: 'Success',
+          message: `The operation was successful.`
+        })
+    .catch(err => console.error(err));
+  // return response.send("deleted user!!!??");
 }
 
 
