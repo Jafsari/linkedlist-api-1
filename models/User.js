@@ -5,11 +5,11 @@ const userSchema = new mongoose.Schema(
     firstName: String,
     lastName: String,
     password: String,
-    username: String,
+    username: { type: "String", unique: true },
     photo: String,
     experience: [],
     education: [],
-    skills: [],
+    skills: []
   },
   { timestamps: true }
 );
@@ -17,4 +17,3 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
-
