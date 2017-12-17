@@ -1,5 +1,5 @@
 function formatResponse(json) {
-  delete json.password
+  delete json.password;
   return { data: json };
 }
 

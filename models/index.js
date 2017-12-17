@@ -8,12 +8,11 @@ mongoose
     useMongoClient: true
   })
   .then(() => {
-    console.log("Connected to MongoDB!");  
+    console.log("Connected to MongoDB!");
   })
   .catch(err => {
-    console.error(err)
+    console.error(err);
   });
 
 exports.User = require("./User");
-
-
+exports.Company = require("./Company");
