@@ -1,17 +1,19 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const mongoose = require('mongoose');
+const bodyParser = require("body-parser");
+const express = require("express");
+const mongoose = require("mongoose");
 
 // imports
-const { usersRouter } = require('./routers');
+const { usersRouter } = require("./routers");
+const { companiesRouter } = require("./routers");
 
 // globals
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(bodyParser.json({ type: '*/*' }));
+app.use(bodyParser.json({ type: "*/*" }));
 
-app.use('/users', usersRouter);
+app.use("/users", usersRouter);
+app.use("/companies", companiesRouter);
 
 app.listen(PORT, () => {
   console.log(`You are connected on port ${PORT}`);
