@@ -7,8 +7,8 @@ const companySchema = new mongoose.Schema(
     email: String,
     handle: String,
     logo: String,
-    employees: [],
-    jobs: []
+    employees: [], // [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
+    jobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }] // [{type: mongoose.Schema.Types.ObjectId, ref: 'Job'}]
   },
   { timestamps: true }
 );

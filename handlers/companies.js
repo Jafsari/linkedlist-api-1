@@ -1,4 +1,6 @@
 const { Company } = require("../models");
+const { Job } = require("../models");
+
 const { formatResponse } = require("../helpers");
 
 function createCompany(request, response, next) {
@@ -10,6 +12,7 @@ function createCompany(request, response, next) {
 function getCompany(request, response, next) {
   const handle = request.params.handle;
   return Company.findOne({ handle })
+    .populate("jobs")
     .then(company => response.status(200).json(formatResponse(company)))
     .catch(err => console.error(err));
 }
