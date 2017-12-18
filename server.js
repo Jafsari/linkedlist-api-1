@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 // imports
 const { usersRouter } = require("./routers");
 const { companiesRouter } = require("./routers");
+const { jobsRouter } = require("./routers");
 
 // globals
 const app = express();
@@ -14,6 +15,7 @@ app.use(bodyParser.json({ type: "*/*" }));
 
 app.use("/users", usersRouter);
 app.use("/companies", companiesRouter);
+app.use("/jobs", jobsRouter);
 
 app.listen(PORT, () => {
   console.log(`You are connected on port ${PORT}`);
