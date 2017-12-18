@@ -1,8 +1,21 @@
-const { Job } = require("../models");
+const { Job, Company } = require("../models");
 const { formatResponse } = require("../helpers");
 
 function createJob(request, response, next) {
-  return Job.create(request.body)
+  const newJob = new Job(request.body);
+  const _id = request.body.company;
+  //newJob.company = _id;
+
+  return newJob
+    .save()
+    .then(job => {
+      return Company.findByIdAndUpdate(
+        { _id },
+        {
+          $addToSet: { jobs: job._id }
+        }
+      );
+    })
     .then(job => response.status(201).json(formatResponse(job)))
     .catch(err => console.error(err));
 }
