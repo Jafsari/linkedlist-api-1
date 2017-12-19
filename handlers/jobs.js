@@ -39,7 +39,17 @@ function updateJob(request, response, next) {
 }
 
 function deleteJob(request, response, next) {
-  return Job.findByIdAndRemove(request.params.id)
+  const _id = request.body.company;
+  const jobId = request.params.id;
+  return Job.findByIdAndRemove(jobId)
+    .then(job => {
+      return Company.findByIdAndUpdate(
+        { _id },
+        {
+          $pull: { jobs: job.jobId }
+        }
+      );
+    })
     .then(() =>
       response.json({
         status: 200,

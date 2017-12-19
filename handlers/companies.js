@@ -32,7 +32,7 @@ function updateCompany(request, response, next) {
 
 function deleteCompany(request, response, next) {
   const handle = request.params.handle;
-  return Company.findOneAndRemove(handle)
+  return Company.findOneAndRemove({ handle })
     .then(() =>
       response.json({
         status: 200,

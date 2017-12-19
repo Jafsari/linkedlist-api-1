@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Company = require("./Company");
 
 const jobSchema = new mongoose.Schema(
   {
@@ -9,6 +10,11 @@ const jobSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+jobSchema.post("remove", job => {
+  console.log("i am here", job);
+  Company.updateCompany(job.company, { $pull: { jobs: job._id } });
+});
 
 const Job = mongoose.model("Job", jobSchema);
 
