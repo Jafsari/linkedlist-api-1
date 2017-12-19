@@ -16,7 +16,7 @@ function createJob(request, response, next) {
         }
       );
     })
-    .then(job => response.status(201).json(formatResponse(job)))
+    .then(company => response.status(201).json(formatResponse(company)))
     .catch(err => console.error(err));
 }
 
@@ -39,16 +39,11 @@ function updateJob(request, response, next) {
 }
 
 function deleteJob(request, response, next) {
-  const _id = request.body.company;
-  const jobId = request.params.id;
-  return Job.findByIdAndRemove(jobId)
-    .then(job => {
-      return Company.findByIdAndUpdate(
-        { _id },
-        {
-          $pull: { jobs: job.jobId }
-        }
-      );
+  const company_id = request.body.company;
+  const job_id = request.params.id;
+  return Company.findByIdAndUpdate(company_id, { $pull: { jobs: job_id } })
+    .then(() => {
+      return Job.findByIdAndRemove(request.params.id);
     })
     .then(() =>
       response.json({
