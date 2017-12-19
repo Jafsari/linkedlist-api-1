@@ -2,13 +2,44 @@ const mongoose = require("mongoose");
 
 const companySchema = new mongoose.Schema(
   {
-    name: String,
-    password: String,
-    email: String,
-    handle: { type: String, required: true },
-    logo: String,
-    employees: [], // [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
-    jobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }] // [{type: mongoose.Schema.Types.ObjectId, ref: 'Job'}]
+    name: {
+      type: String,
+      required: true,
+      minlength: 1,
+      maxlength: 55
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 1,
+      maxlength: 55
+    },
+    email: {
+      type: String,
+      required: true,
+      minlength: 1,
+      maxlength: 55
+    },
+    handle: {
+      type: String,
+      required: true,
+      unique: true,
+      minlength: 1,
+      maxlength: 55
+    },
+    logo: String, // valid URL
+    employees: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    jobs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Job"
+      }
+    ]
   },
   { timestamps: true }
 );
