@@ -29,7 +29,7 @@ function updateUser(request, response, next) {
 
 function deleteUser(request, response, next) {
   const username = request.params.username;
-  return User.findOneAndRemove(username)
+  return User.findOneAndRemove({ username })
     .then(() =>
       response.json({
         status: 200,

@@ -9,7 +9,21 @@ const { jobsRouter } = require("./routers");
 
 // globals
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3010;
+
+app.use((request, response, next) => {
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header(
+    "Access-Control-Allow-Headers",
+    "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization"
+  );
+  response.header(
+    "Access-Control-Allow-Methods",
+    "POST,GET,PATCH,DELETE,OPTIONS"
+  );
+  response.header("Content-Type", "application/json");
+  next();
+});
 
 app.use(bodyParser.json({ type: "*/*" }));
 
