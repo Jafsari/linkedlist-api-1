@@ -10,7 +10,7 @@ const { PORT } = require("./config");
 const { authUserHandler, errorHandler } = require("./handlers");
 
 // globals
-const app = express();
+const server = express();
 const {
   bodyParserHandler,
   globalErrorHandler,
@@ -18,7 +18,7 @@ const {
   fourOhFiveHandler
 } = errorHandler;
 
-app.use((request, response, next) => {
+server.use((request, response, next) => {
   response.header("Access-Control-Allow-Origin", "*");
   response.header(
     "Access-Control-Allow-Headers",
@@ -32,20 +32,22 @@ app.use((request, response, next) => {
   next();
 });
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ type: "*/*" }));
-app.use(bodyParserHandler);
+server.use(bodyParser.urlencoded({ extended: true }));
+server.use(bodyParser.json({ type: "*/*" }));
+server.use(bodyParserHandler);
 
-app.use("/users", usersRouter);
-app.use("/companies", companiesRouter);
-app.use("/jobs", jobsRouter);
+server.use("/users", usersRouter);
+server.use("/companies", companiesRouter);
+server.use("/jobs", jobsRouter);
 
-app.post("/user-auth", authUserHandler);
+server.post("/user-auth", authUserHandler);
 
-app.get("*", fourOhFourHandler); // catch-all for 404 "Not Found" errors
-app.all("*", fourOhFiveHandler); // catch-all for 405 "Method Not Allowed" errors
-app.use(globalErrorHandler);
+server.get("*", fourOhFourHandler); // catch-all for 404 "Not Found" errors
+server.all("*", fourOhFiveHandler); // catch-all for 405 "Method Not Allowed" errors
+server.use(globalErrorHandler);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`LinkedList running on port ${PORT}`);
 });
+
+module.exports = server;

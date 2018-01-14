@@ -1,0 +1,587 @@
+FORMAT: 1A
+
+# LinkedList
+
+This is the RESTful API backend to the [LinkedList project](https://github.com/rithmschool/LinkedList) (a spin-off of LinkedIn / AngelList)
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Resource Structure
+
+### Collections
+
+The API provides access to the following collections.
+Both collections have full CRUD operations.
+
+#### Users
+
+- **Collection Endpoint**: `/users`
+- **Singular Endpoint**: `/users/{username}`
+- **Attributes**:
+  - `firstName` - the user's first name, between 1 and 55 characters. Required to Create a New User.
+  - `lastName` - the user's last name, between 1 and 55 characters. Required to Create a New User.
+  - `username` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New User. Immutable.
+  - `email` - between 1 and 55 characters. Required to Create a New User.
+  - `password` - between 1 and 55 characters. Required to Create a New User.
+  - `currentCompany` - this should reference an ObjectId for a company
+  - `photo` - A valid URL for a photo
+  - `experience`
+      - `jobTitle`
+      - `company` (Company)
+      - `startDate` - ISO date-format timestamp when experience began.
+      - `endDate` - ISO date-format timestamp when experience ended.
+  - `education`
+      - `institution` - the institution where the user enrolled or is currently enrolled in.
+      - `degree` - the degree that the user earned or is currently earning.
+      - `endDate` - ISO date-format timestamp when education ended.
+  - `skills`
+  - `createdAt` - auto-generated timestamp of when the user was originally created.
+  - `updatedAt` - auto-generated timestamp of when the user was last updated.
+
+#### Companies
+
+- **Collection Endpoint**: `/companies`
+- **Singular Endpoint**: `/companies/{handle}`
+- **Attributes**:
+  - `name` - username can only consist of letters and numbers between 1 and 55 characters. Required to Create a New Company. Immutable.
+  - `email` - between 1 and 55 characters. Required to Create a New Company.
+  - `handle` - between 1 and 55 characters. Required to Create a New Company.
+  - `password` - between 1 and 55 characters. Required to Create a New Company.
+  - `logo` - a valid URL for the logo of the company
+  - `employees` - array of User IDs
+  - `jobs` - array of Job IDs
+
+#### Jobs
+
+- **Collection Endpoint**: `/jobs`
+- **Singular Endpoint**: `/jobs/{jobId}`
+- **Attributes**:
+  - `title` - the title for the job posting.
+  - `company` - this should reference an ObjectId for a company
+  - `salary` - a number for the salary offered in this post
+  - `equity` - a float for the equity offered in this post
+  - `createdAt` - auto-generated timestamp of when the job was originally created.
+  - `updatedAt` - auto-generated timestamp of when the job was last updated.
+
+See the [Reference section](/#reference/0/auth) for fully-detailed resource documentation.
+
+&nbsp;
+
+---
+
+## UserAuth [/user-auth]
+Endpoint for authenticating a user by getting a JWT from the server.
+
+### Authorize to Receive a Token [POST]
+
++ Request
+    + Attributes
+        + data (UserAuth)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data
+            + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1odWV0ZXIiLCJpYXQiOjE1MTAyMDcwMDl9.5oUeihYn2AkqGy6z3g5F5B46gWWgvGKilFr9S4gg-p4` (string, required) - JWT used to authenticate in the future. Put in `Authorization` request header like: `Bearer <TOKEN>`.
+
++ Request Bad Request
+    + Attributes
+        + data (UserAuth)
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
+    + Attributes
+        + data (UserAuth)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
+    + Attributes
+        + data (UserAuth)
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+## CompanyAuth [/company-auth]
+Endpoint for authenticating a company by getting a JWT from the server.
+
+### Authorize to Receive a Token [POST]
+
++ Request
+    + Attributes
+        + data (CompanyAuth)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data
+            + token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1odWV0ZXIiLCJpYXQiOjE1MTAyMDcwMDl9.5oUeihYn2AkqGy6z3g5F5B46gWWgvGKilFr9S4gg-p4` (string, required) - JWT used to authenticate in the future. Put in `Authorization` request header like: `Bearer <TOKEN>`.
+
++ Request Bad Request
+    + Attributes
+        + data (CompanyAuth)
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
+    + Attributes
+        + data (CompanyAuth)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
+    + Attributes
+        + data (CompanyAuth)
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+## Users [/users{?skip,limit,q}]
+Endpoint to create a user or query for a list of users.
+
+### Get a List of Users [GET]
+**UserAuth Required**. Note: passwords are not visible at this endpoint. By default, `limit` is set to 50.
+
++ Parameters
+    + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
+    + limit: 10 (number, optional) - the number of documents to return. Default and maximum set to 50.
+    + q: `Matt Lane` (string, optional) - the field to search by.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (array[User])
+
++ Request Bad Request
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
+### Create a New User [POST]
+Note: password will not be present in the response.
+The fields `username`, `password`, and `name` are required.
+
++ Request
+    + Attributes
+        + data (User)
++ Response 201 (application/json; charset=utf-8)
+    + Attributes
+        + data (User)
+
++ Request Bad Request
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Conflict
++ Response 409 (application/json; charset=utf-8)
+    + Attributes
+        + error (Conflict)
+
+
+## User [/users/{username}]
+Endpoint for reading, updating, or deleting a single user.
+
++ Parameters
+    + username: mhueter (string, required) - the username to lookup.
+
+### Get a User [GET]
+**UserAuth Required**. Retrieve a single user document by `username`.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (User)
+
++ Request Unauthorized
+    + Attributes
+        + data (User)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+### Update a User [PATCH]
+**UserAuth Required. Correct User Required.** Update a single user document by `username`. Note: `username` and `favorites` are immutable via this endpoint.
+
++ Request
+    + Attributes
+        + data (User)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (User)
+
++ Request Bad Request
+    + Attributes
+        + data (User)
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
+    + Attributes
+        + data (User)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
+    + Attributes
+        + data (User)
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+### Delete a User [DELETE]
+**UserAuth Required. Correct User Required.** Remove a single user document by `username`.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Success)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+## Jobs [/jobs{?skip,limit,q}]
+Endpoint to create a user or query for a list of users.
+
+### Get a List of Jobs [GET]
+**UserAuth Required**. By default, `limit` is set to 50.
+
++ Parameters
+    + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
+    + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
+    + q: `Github` (string, optional) - the field to search by
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (array[User])
+
++ Request Bad Request
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
+### Create a New Job [POST]
+**CompanyAuth Required**. The fields `title`, `company`, `salary`, and `equity` are required.
+
++ Request
+    + Attributes
+        + data (Job)
++ Response 201 (application/json; charset=utf-8)
+    + Attributes
+        + data (Job)
+
++ Request Bad Request
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Conflict
++ Response 409 (application/json; charset=utf-8)
+    + Attributes
+        + error (Conflict)
+
+## Job [/jobs/{id}]
+Endpoint for reading, updating, or deleting a single user.
+
++ Parameters
+    + id: 4 (string, required) - the job to lookup.
+
+### Get a Job [GET]
+**UserAuth Required**. Retrieve a single job document by `id`.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Job)
+
++ Request Unauthorized
+    + Attributes
+        + data (Job)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+### Update a Job [PATCH]
+**CompanyAuth Required. Correct Job Required.** Update a single user document by `id`.
+
++ Request
+    + Attributes
+        + data (Job)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Job)
+
++ Request Bad Request
+    + Attributes
+        + data (Job)
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
+    + Attributes
+        + data (Job)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
+    + Attributes
+        + data (Job)
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+### Delete a Job [DELETE]
+**CompanyAuth Required. Correct Job Required.** Remove a single job document by `id`.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Success)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+## Companies [/companies{?skip,limit,q}]
+Endpoint to create a user or query for a list of users.
+
+### Get a List of Companies [GET]
+**Auth Required**. By default, `limit` is set to 50.
+
++ Parameters
+    + skip: 0 (number, optional) - the list of documents to skip over. Default is 0.
+    + limit: 50 (number, optional) - the number of documents to return. Default and maximum set to 50.
+    + q: `Github` (string, optional) - the field to search by
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (array[User])
+
++ Request Bad Request
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
+### Create a New Company [POST]
+The fields `name`, `password`, `email`, and `handle` are required.
+
++ Request
+    + Attributes
+        + data (Company)
++ Response 201 (application/json; charset=utf-8)
+    + Attributes
+        + data (Company)
+
++ Request Bad Request
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Conflict
++ Response 409 (application/json; charset=utf-8)
+    + Attributes
+        + error (Conflict)
+
+## Company [/companies/{handle}]
+Endpoint for reading, updating, or deleting a single company.
+
++ Parameters
+    + handle: `hooli` (string, required) - the company to lookup.
+
+### Get a Company [GET]
+**UserAuth Required**. Retrieve a single company document by `handle`.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Company)
+
++ Request Unauthorized
+    + Attributes
+        + data (Company)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+### Update a Company [PATCH]
+**CompanyAuth Required. Correct Company Required.** Update a single company document by `handle`
+
++ Request
+    + Attributes
+        + data (Company)
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Company)
+
++ Request Bad Request
+    + Attributes
+        + data (Company)
++ Response 400 (application/json; charset=utf-8)
+    + Attributes
+        + error (Bad Request)
+
++ Request Unauthorized
+    + Attributes
+        + data (Company)
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
+    + Attributes
+        + data (Company)
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+### Delete a Company [DELETE]
+**CompanyAuth Required. Correct Company Required.** Remove a single company document by `handle`.
+
++ Request
++ Response 200 (application/json; charset=utf-8)
+    + Attributes
+        + data (Success)
+
++ Request Unauthorized
++ Response 401 (application/json; charset=utf-8)
+    + Attributes
+        + error (Unauthorized)
+
++ Request Not Found
++ Response 404 (application/json; charset=utf-8)
+    + Attributes
+        + error (Not Found)
+
+
+## Data Structures
+
+### UserAuth
+  + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters.
+  + password: `foo123` (string, optional) - between 1 and 55 characters.
+
+### CompanyAuth
+  + email: `gavin@hooli.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters.
+  + password: `bloodboy` (string, optional) - between 1 and 55 characters.
+
+### User
+  + firstName: `Michael` (string, optional) - the user's first name, between 1 and 55 characters. **Required to Create a New User.**
+  + lastName: `Hueter` (string, optional) - the user's last name, between 1 and 55 characters. **Required to Create a New User.**
+  + username: `mhueter` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User. Immutable.**
+  + email: `michael@rithmschool.com` (string, optional) - email can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New User.**
+  + password: `foo123` (string, optional) - between 1 and 55 characters. **Required to Create a New User.**
+  + currentCompany: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company
+  + photo: `https://www.mhueter.com` (string, optional) - A valid URL for a photo
+  + experience (array, optional)
+    + (object)
+      + jobTitle: `Instructor In Chief`
+      + company: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company
+      + startDate: `2016-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience began.
+      + endDate: `2017-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when experience ended.
+  + education (array, optional)
+    + (object)
+      + institution: `School of Hard Knocks` - the institution where the user enrolled or is currently enrolled in.
+      + degree: `Bachelors in Science` - the degree that the user earned or is currently earning.
+      + endDate: `2014-06-15T21:39:25.435000+00:00` (string, optional) - ISO date-format timestamp when education ended.
+  + skills (array[string])
+  + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the user was originally created.
+  + updatedAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the user was last updated.
+
+
+### Company
+  + name: `Hooli` (string, optional) - username can only consist of letters and numbers between 1 and 55 characters. **Required to Create a New Company. Immutable.**
+  + password: `bloodboy` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+  + email: `gavin@hooli.com` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+  + handle: `@hooli` (string, optional) - between 1 and 55 characters. **Required to Create a New Company.**
+  + logo: `https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png` (string, optional) - a valid URL for the logo of the company
+  + employees (array[User])
+  + jobs (array[Job])
+
+#### Job
+  + title: `Software Developer` (string, optional) - the title for the job posting.
+  + company: `5a21b155ac27667d3de5bfaa` - This should reference an ObjectId for a company
+  + salary: 150000 (number, optional) - a number for the salary offered in this post
+  + equity: 2.1 (number, optional) - a float for the equity offered in this post
+  + createdAt: `017-11-09T18:38:39.409Z` (string, optional) - auto-generated timestamp of when the job was originally created.
+  + updatedAt: `017-11-09T18:38:39.409Z`  (string, optional) - auto-generated timestamp of when the job was last updated.
+
+### Bad Request
+  + status: 400 (number, required) - HTTP status code
+  + title: 'Bad Request' (string, required) - text accompanying the status code
+  + message: 'Invalid schema format or malformed JSON.' (string, required) - description of the error
+
+### Unauthorized
+  + status: 401 (number, required) - HTTP status code
+  + title: 'Unauthorized' (string, required) - text accompanying the status code
+  + message: 'You need to authenticate before accessing this resource.' (string, required) - description of the error
+
+### Not Found
+  + status: 404 (number, required) - HTTP status code
+  + title: 'Not Found' (string, required) - text accompanying the status code
+  + message: 'Document with that ID was not found.' (string, required) - description of the error
+
+### Conflict
+  + status: 409 (number, required) - HTTP status code
+  + title: 'Conflict' (string, required) - text accompanying the status code
+  + message: 'Another document with the same ID already exists.' (string, required) - description of the error
+
+### Success
+  + status: 200 (number, required) - HTTP status code
+  + title: 'Success' (string, required) - text accompanying the status code
+  + message: 'The operation was successful.' (string, required) - description of the event

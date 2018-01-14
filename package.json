@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node server.js"
   },
   "repository": {
@@ -25,6 +25,13 @@
     "mongoose": "^4.13.7"
   },
   "devDependencies": {
-    "locus": "^2.0.1"
+    "axios": "^0.17.1",
+    "chai": "^4.1.2",
+    "eslint": "^4.15.0",
+    "faker": "^4.1.0",
+    "locus": "^2.0.1",
+    "mocha": "^4.1.0",
+    "nodemon": "^1.14.11",
+    "supertest": "^3.0.0"
   }
 }
