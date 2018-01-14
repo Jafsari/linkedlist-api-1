@@ -1,21 +1,19 @@
-const express = require("express")
+const express = require("express");
 
-const { usersHandler } = require("../handlers")
-
+const { usersHandler } = require("../handlers");
+const { ensureAuth, ensureCorrectUser } = require("../helpers");
 const router = new express.Router();
 const { getUsers, createUser, getUser, updateUser, deleteUser } = usersHandler;
 
-router  
+router
   .route("")
-  .get(getUsers)
-  .post(createUser)
-
+  .get(ensureAuth, getUsers)
+  .post(createUser);
 
 router
   .route("/:username")
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser);
-
+  .get(ensureAuth, getUser)
+  .patch(ensureAuth, ensureCorrectUser, updateUser)
+  .delete(ensureAuth, ensureCorrectUser, deleteUser);
 
 module.exports = router;

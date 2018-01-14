@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
+const { MONGODB_URI } = require("../config");
 
 mongoose.Promise = Promise;
 mongoose.set("debug", true);
 
 mongoose
-  .connect("mongodb://localhost/linkedlist", {
+  .connect(MONGODB_URI, {
     useMongoClient: true
   })
   .then(() => {
