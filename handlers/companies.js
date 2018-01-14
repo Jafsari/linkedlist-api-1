@@ -4,7 +4,7 @@ const { Job } = require("../models");
 const { formatResponse } = require("../helpers");
 
 function createCompany(request, response, next) {
-  return Company.create(request.body)
+  return Company.createCompany(request.body)
     .then(company => response.status(201).json(formatResponse(company)))
     .catch(err => console.error(err));
 }
