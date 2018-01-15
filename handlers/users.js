@@ -1,6 +1,7 @@
 const { User } = require("../models");
 const { formatResponse, parseSkipLimit } = require("../helpers");
 
+// assuming we can make a user witht the data coming in
 function createUser(request, response, next) {
   return User.createUser(new User(request.body.data))
     .then(user => response.status(201).json(formatResponse(user)))
