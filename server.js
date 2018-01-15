@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const { usersRouter } = require("./routers");
 const { companiesRouter } = require("./routers");
 const { jobsRouter } = require("./routers");
+const { userAuthRouter } = require("./routers");
 const { PORT } = require("./config");
 const { authUserHandler, errorHandler } = require("./handlers");
 
@@ -40,6 +41,7 @@ server.use("/users", usersRouter);
 server.use("/companies", companiesRouter);
 server.use("/jobs", jobsRouter);
 
+server.use("/user-auth", authUserHandler);
 server.post("/user-auth", authUserHandler);
 
 server.get("*", fourOhFourHandler); // catch-all for 404 "Not Found" errors

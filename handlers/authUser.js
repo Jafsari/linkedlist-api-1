@@ -5,12 +5,12 @@ const { User } = require("../models");
 const { APIError, formatResponse } = require("../helpers");
 
 function authUser(req, res, next) {
-  return User.getUser(req.body.data.username)
+  return User.getUser(req.body.data && req.body.data.username)
     .then(user => {
       if (!user) {
         throw new APIError(401, "Unauthorized", "Invalid User");
       }
-      const isValidPassword = bcrypt.compare(
+      const isValidPassword = bcrypt.compareSync(
         req.body.data.password,
         user.password
       );
